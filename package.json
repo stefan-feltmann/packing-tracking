@@ -4,6 +4,8 @@
   "description": "A project to keep track of what item is in what box while moving.",
   "main": "index.js",
   "scripts": {
+    "build-dbml": "cd SQL && dbdocs build database.dbml --project=packing_tracking",
+    "build-postgres": "cd SQL && dbml2sql database.dbml -o schema.sql",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
