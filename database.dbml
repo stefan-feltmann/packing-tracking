@@ -1,0 +1,45 @@
+Table users as U {
+  id uuid [default: `uuid_generate_v4()`, primary key]
+  username varchar [not null, unique]
+  role varchar
+  created_at timestamp [default: `now()`]
+  active bool [default: `true`]
+}
+
+Table move as M {
+    id uuid [default: `uuid_generate_v4()`, primary key]
+    user_id uuid [not null]
+    move_name varchar [not null, unique]
+    created_at timestamp [default: `now()`]
+    active bool [default: `true`]
+}
+
+Table box as B {
+    id uuid [default: `uuid_generate_v4()`, primary key]
+    move_id uuid [not null]
+    box_name varchar [not null, unique]
+    box_desc varchar
+    created_at timestamp [default: `now()`]
+    active bool [default: `true`]
+}
+
+Table item as I { // Will need to add S3 storage info later
+    id uuid [default: `uuid_generate_v4()`, primary key]
+    box_id uuid [not null]
+    item_name varchar [not null, unique]
+    item_desc varchar
+    created_at timestamp [default: `now()`]
+    active bool [default: `true`]
+}
+
+Ref user_to_move {
+  U.id > M.user_id
+}
+
+Ref move_to_box {
+  M.id > B.move_id
+}
+
+Ref box_to_item {
+  B.id > I.box_id
+}
