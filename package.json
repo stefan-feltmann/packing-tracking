@@ -1,0 +1,19 @@
+{
+  "name": "packing-tracking",
+  "version": "1.0.0",
+  "description": "A project to keep track of what item is in what box while moving.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stefan-feltmann/packing-tracking.git"
+  },
+  "author": "Stefan M. Feltmann",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/stefan-feltmann/packing-tracking/issues"
+  },
+  "homepage": "https://github.com/stefan-feltmann/packing-tracking#readme"
+}
