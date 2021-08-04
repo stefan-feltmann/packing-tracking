@@ -1,7 +1,7 @@
 import fs = require('fs')
 import child_process = require('child_process')
 ;(async () => {
-  const dirs = ['lib', 'bin']
+  const dirs = ['lib', 'bin', 'handlers']
   for (const dir of dirs) {
     process.chdir(dir)
     const items = fs.readdirSync('./')

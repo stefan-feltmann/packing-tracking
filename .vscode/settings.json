@@ -4,6 +4,7 @@
         "certificatemanager",
         "dbdocs",
         "dbml",
+        "hasura",
         "postgres"
     ],
     "workbench.colorCustomizations": {
