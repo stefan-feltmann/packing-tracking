@@ -6,12 +6,12 @@ export class PackingTrackingStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const vpc = new ec2.Vpc(this, 'QuakeAlertVPC', {
+    const vpc = new ec2.Vpc(this, 'PackingTrackingVPC', {
       cidr: '10.0.0.0/16',
     })
 
     // The code that defines your stack goes here
-    const dbInstance = new rds.DatabaseInstance(this, 'QuakeInstance', {
+    const dbInstance = new rds.DatabaseInstance(this, 'PackingTrackingInstance', {
       engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_13 }),
       // optional, defaults to m5.large
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
