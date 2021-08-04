@@ -6,6 +6,7 @@
     "packing-tracking": "bin/packing-tracking.js"
   },
   "scripts": {
+    "postinstall": "ts-node scripts/install-handler-deps.ts",
     "build-dbml": "cd SQL && dbdocs build database.dbml --project=packing_tracking",
     "build-postgres": "cd SQL && dbml2sql database.dbml -o schema.sql",
     "build": "tsc",
@@ -35,6 +36,9 @@
   },
   "dependencies": {
     "@aws-cdk/core": "1.116.0",
+    "@aws-cdk/aws-rds": "^1.116.0",
+    "@aws-cdk/aws-ec2": "^1.116.0",
+    "@aws-cdk/aws-secretsmanager": "^1.116.0",
     "source-map-support": "^0.5.16"
   }
 }
