@@ -5,7 +5,8 @@
         "dbdocs",
         "dbml",
         "hasura",
-        "postgres"
+        "postgres",
+        "fargate"
     ],
     "workbench.colorCustomizations": {
         "activityBar.background": "#ff7847",

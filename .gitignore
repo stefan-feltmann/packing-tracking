@@ -110,3 +110,4 @@ dist
 # CDK asset staging directory
 .cdk.staging
 cdk.out
+packing-tracking.code-workspace
