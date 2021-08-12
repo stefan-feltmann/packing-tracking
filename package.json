@@ -6,13 +6,16 @@
     "packing-tracking": "bin/packing-tracking.js"
   },
   "scripts": {
+    "prettier": "pretty-quick",
     "postinstall": "ts-node scripts/install-handler-deps.ts",
     "build-dbml": "cd SQL && dbdocs build database.dbml --project=packing_tracking",
     "build-postgres": "cd SQL && dbml2sql database.dbml -o schema.sql",
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
-    "cdk": "cdk"
+    "cdk": "cdk",
+    "destroy": "cdk destroy",
+    "deploy": "cdk deploy"
   },
   "repository": {
     "type": "git",
@@ -23,22 +26,36 @@
   "bugs": {
     "url": "https://github.com/stefan-feltmann/packing-tracking/issues"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
+  },
   "homepage": "https://github.com/stefan-feltmann/packing-tracking#readme",
   "devDependencies": {
-    "@aws-cdk/assert": "1.116.0",
+    "@aws-cdk/assert": "^1.118.0",
     "@types/jest": "^26.0.10",
     "@types/node": "10.17.27",
     "jest": "^26.4.2",
     "ts-jest": "^26.2.0",
-    "aws-cdk": "1.116.0",
+    "aws-cdk": "^1.118.0",
+    "husky": "^6.0.0",
     "ts-node": "^9.0.0",
+    "prettier": "^2.2.1",
+    "pretty-quick": "^3.1.0",
     "typescript": "~3.9.7"
   },
   "dependencies": {
-    "@aws-cdk/core": "1.116.0",
-    "@aws-cdk/aws-rds": "^1.116.0",
-    "@aws-cdk/aws-ec2": "^1.116.0",
-    "@aws-cdk/aws-secretsmanager": "^1.116.0",
+    "@aws-cdk/aws-events": "^1.118.0",
+    "@aws-cdk/aws-certificatemanager": "^1.118.0",
+    "@aws-cdk/aws-route53": "^1.118.0",
+    "@aws-cdk/aws-ecs-patterns": "^1.118.0",
+    "@aws-cdk/aws-ecs": "^1.118.0",
+    "@aws-cdk/aws-ec2": "^1.118.0",
+    "@aws-cdk/aws-secretsmanager": "^1.118.0",
+    "@aws-cdk/aws-route53-targets": "^1.118.0",
+    "@aws-cdk/core": "^1.118.0",
+    "@aws-cdk/aws-rds": "^1.118.0",
     "source-map-support": "^0.5.16"
   }
 }

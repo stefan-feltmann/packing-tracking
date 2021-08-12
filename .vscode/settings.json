@@ -1,28 +1,21 @@
 {
-    "cSpell.words": [
-        "Feltmann",
-        "certificatemanager",
-        "dbdocs",
-        "dbml",
-        "hasura",
-        "postgres",
-        "fargate"
-    ],
-    "workbench.colorCustomizations": {
-        "activityBar.background": "#ff7847",
-        "activityBar.activeBorder": "#60ff8a",
-        "activityBar.foreground": "#15202b",
-        "activityBar.inactiveForeground": "#15202b99",
-        "activityBarBadge.background": "#60ff8a",
-        "activityBarBadge.foreground": "#15202b",
-        "titleBar.activeBackground": "#ff5314",
-        "titleBar.inactiveBackground": "#ff531499",
-        "titleBar.activeForeground": "#e7e7e7",
-        "titleBar.inactiveForeground": "#e7e7e799",
-        "statusBar.background": "#ff5314",
-        "statusBarItem.hoverBackground": "#ff7847",
-        "statusBar.foreground": "#e7e7e7",
-        "activityBar.activeBackground": "#ff7847"
-    },
-    "peacock.color": "#FF5314"
+  "editor.formatOnSave": true,
+  "cSpell.words": ["BURSTABLE", "Feltmann", "certificatemanager", "dbdocs", "dbml", "fargate", "hasura", "postgres"],
+  "workbench.colorCustomizations": {
+    "activityBar.background": "#ff7847",
+    "activityBar.activeBorder": "#60ff8a",
+    "activityBar.foreground": "#15202b",
+    "activityBar.inactiveForeground": "#15202b99",
+    "activityBarBadge.background": "#60ff8a",
+    "activityBarBadge.foreground": "#15202b",
+    "titleBar.activeBackground": "#ff5314",
+    "titleBar.inactiveBackground": "#ff531499",
+    "titleBar.activeForeground": "#e7e7e7",
+    "titleBar.inactiveForeground": "#e7e7e799",
+    "statusBar.background": "#ff5314",
+    "statusBarItem.hoverBackground": "#ff7847",
+    "statusBar.foreground": "#e7e7e7",
+    "activityBar.activeBackground": "#ff7847"
+  },
+  "peacock.color": "#FF5314"
 }
