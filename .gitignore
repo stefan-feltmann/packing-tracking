@@ -111,3 +111,4 @@ dist
 .cdk.staging
 cdk.out
 packing-tracking.code-workspace
+cdk.context.json

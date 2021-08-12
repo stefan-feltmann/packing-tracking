@@ -2,8 +2,12 @@ import { StackProps, Stack, Construct, CfnOutput, RemovalPolicy } from '@aws-cdk
 import { Vpc, SubnetType, InstanceType, InstanceClass, InstanceSize, Port, Protocol } from '@aws-cdk/aws-ec2'
 import { ApplicationLoadBalancedFargateService } from '@aws-cdk/aws-ecs-patterns'
 import { ContainerImage } from '@aws-cdk/aws-ecs'
+import { HostedZone } from '@aws-cdk/aws-route53'
+import { DnsValidatedCertificate } from '@aws-cdk/aws-certificatemanager'
 import { DatabaseInstance, DatabaseInstanceEngine, DatabaseSecret, Credentials } from '@aws-cdk/aws-rds'
 import { Secret } from '@aws-cdk/aws-secretsmanager'
+
+require('dotenv').config()
 
 export class PackingTrackingStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -18,6 +22,15 @@ export class PackingTrackingStack extends Stack {
 
     const dbUser = 'packageAdmin'
     const configVals = Credentials.fromGeneratedSecret(dbUser)
+
+    const rootDomainName = process.env.URL ? process.env.URL : ''
+    const zone = HostedZone.fromLookup(this, 'IV-Zone', { domainName: rootDomainName })
+
+    const graphqlSubDomainName = `graphql.${rootDomainName}`
+    const graphqlCert = new DnsValidatedCertificate(this, `${graphqlSubDomainName}-cert`, {
+      domainName: graphqlSubDomainName,
+      hostedZone: zone,
+    })
 
     const hasuraDatabase = new DatabaseInstance(this, `${appName}HasuraDatabase`, {
       instanceIdentifier: `${appName}`,
@@ -42,6 +55,10 @@ export class PackingTrackingStack extends Stack {
 
     const hasuraDatabaseUrlSecret = new Secret(this, `${appName}HasuraDatabaseUrlSecret`, {
       secretName: `${appName}-HasuraDatabaseUrl`,
+    })
+
+    const hasuraGraphqlAdminSecret = new Secret(this, `${appName}HasuraGraphqlAdminSecret`, {
+      secretName: `${appName}-HasuraGraphqlAdminSecret`,
     })
 
     const hasuraJwtSecret = new Secret(this, `${appName}HasuraJwtSecret`, {
@@ -81,6 +98,9 @@ export class PackingTrackingStack extends Stack {
       cpu: 256,
       desiredCount: multiAz ? 2 : 1,
       vpc: vpc,
+      certificate: graphqlCert,
+      domainZone: zone,
+      domainName: graphqlSubDomainName,
       taskImageOptions: {
         image: ContainerImage.fromRegistry('hasura/graphql-engine:v1.2.1'),
         containerPort: 8080,
@@ -90,6 +110,9 @@ export class PackingTrackingStack extends Stack {
           HASURA_GRAPHQL_PG_CONNECTIONS: '100',
           HASURA_GRAPHQL_LOG_LEVEL: 'debug',
           HASURA_GRAPHQL_DATABASE_URL: dbUrl,
+          HASURA_GRAPHQL_ADMIN_SECRET: hasuraGraphqlAdminSecret.secretValue.toString(),
+          HASURA_GRAPHQL_JWT_SECRET:
+              '{"type":"RS512", "jwk_url": "https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com"}',
         },
         secrets: {
           // HASURA_GRAPHQL_DATABASE_URL: ECSSecret.fromSecretsManager(hasuraDatabaseUrlSecret),
