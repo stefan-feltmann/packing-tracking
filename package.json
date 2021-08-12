@@ -14,6 +14,7 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
+    "rebuild": "npm run destroy && npm run deploy",
     "destroy": "cdk destroy",
     "deploy": "cdk deploy"
   },
