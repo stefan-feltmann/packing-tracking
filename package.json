@@ -41,7 +41,7 @@
   "homepage": "https://github.com/stefan-feltmann/packing-tracking#readme",
   "devDependencies": {
     "@aws-cdk/assert": "^1.118.0",
-    "@types/jest": "^26.0.10",
+    "@types/jest": "^27.0.1",
     "@types/node": "16.6.1",
     "jest": "^26.4.2",
     "ts-jest": "^26.2.0",
