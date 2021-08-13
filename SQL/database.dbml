@@ -1,5 +1,5 @@
 Table users as U {
-  id uuid [default: `uuid_generate_v4()`, primary key]
+  id uuid [default: `uuid_generate_v4()`, primary key, unique]
   username varchar [not null, unique]
   role varchar
   created_at timestamp [default: `now()`]
@@ -7,7 +7,7 @@ Table users as U {
 }
 
 Table move as M {
-    id uuid [default: `uuid_generate_v4()`, primary key]
+    id uuid [default: `uuid_generate_v4()`, primary key, unique]
     user_id uuid [not null]
     move_name varchar [not null, unique]
     created_at timestamp [default: `now()`]
@@ -15,7 +15,7 @@ Table move as M {
 }
 
 Table box as B {
-    id uuid [default: `uuid_generate_v4()`, primary key]
+    id uuid [default: `uuid_generate_v4()`, primary key, unique]
     move_id uuid [not null]
     box_name varchar [not null, unique]
     box_desc varchar
@@ -24,7 +24,7 @@ Table box as B {
 }
 
 Table item as I { // Will need to add S3 storage info later
-    id uuid [default: `uuid_generate_v4()`, primary key]
+    id uuid [default: `uuid_generate_v4()`, primary key, unique]
     box_id uuid [not null]
     item_name varchar [not null, unique]
     item_desc varchar
@@ -33,13 +33,13 @@ Table item as I { // Will need to add S3 storage info later
 }
 
 Ref user_to_move {
-  U.id > M.user_id
+  U.id < M.user_id
 }
 
 Ref move_to_box {
-  M.id > B.move_id
+  M.id < B.move_id
 }
 
 Ref box_to_item {
-  B.id > I.box_id
+  B.id < I.box_id
 }

@@ -1,0 +1,12 @@
+- table:
+    schema: public
+    name: box
+- table:
+    schema: public
+    name: item
+- table:
+    schema: public
+    name: move
+- table:
+    schema: public
+    name: users
