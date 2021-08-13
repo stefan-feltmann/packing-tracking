@@ -8,9 +8,13 @@
   "scripts": {
     "prettier": "pretty-quick",
     "postinstall": "ts-node scripts/install-handler-deps.ts",
+    "dbml": "cd SQL && dbdocs",
     "build-dbml": "cd SQL && dbdocs build database.dbml --project=packing_tracking",
     "build-postgres": "cd SQL && dbml2sql database.dbml -o schema.sql",
+    "build-dbml-from-postgres": "cd SQL && sql2dbml schema.sql --postgres -o test.sql",
     "hasura-console-prod": "URL=$(grep URL .env | cut -d '=' -f2) && cd hasura && ls && hasura console --endpoint \"https://graphql.$URL\" --admin-secret \"$(npm run --silent get-hasura-admin-secret-prod)\"",
+    "apply-hasura-migrations-prod": "URL=$(grep URL .env | cut -d '=' -f2) && cd ./hasura && hasura migrate apply --endpoint \"https://graphql.$URL\" --admin-secret \"$(npm run --silent get-hasura-admin-secret-prod)\"",
+    "apply-hasura-metadata-prod": "URL=$(grep URL .env | cut -d '=' -f2) && cd ./hasura && hasura metadata apply --endpoint \"https://graphql.$URL\" --admin-secret \"$(npm run --silent get-hasura-admin-secret-prod)\"",
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
