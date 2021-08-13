@@ -94,7 +94,7 @@ export class PackingTrackingStack extends Stack {
     const dbUrl = `postgres://${dbUsername}:${dbPassword}@${dbHost}:5432/${dbName}`
 
     const fargate = new ApplicationLoadBalancedFargateService(this, `${appName}HasuraFargateService`, {
-      serviceName: appName,
+      serviceName: `${appName}`,
       cpu: 256,
       desiredCount: multiAz ? 2 : 1,
       vpc: vpc,
@@ -121,7 +121,7 @@ export class PackingTrackingStack extends Stack {
         },
       },
       memoryLimitMiB: 512,
-      publicLoadBalancer: false, // Default is false
+      publicLoadBalancer: true, // Default is false
       // certificate: props.certificates.hasura,
       // domainName: props.hasuraHostname,
       // domainZone: hostedZone,

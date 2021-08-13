@@ -10,6 +10,7 @@
     "postinstall": "ts-node scripts/install-handler-deps.ts",
     "build-dbml": "cd SQL && dbdocs build database.dbml --project=packing_tracking",
     "build-postgres": "cd SQL && dbml2sql database.dbml -o schema.sql",
+    "hasura-console-prod": "URL=$(grep URL .env | cut -d '=' -f2) && cd hasura && ls && hasura console --endpoint \"https://graphql.$URL\" --admin-secret \"$(npm run --silent get-hasura-admin-secret-prod)\"",
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
