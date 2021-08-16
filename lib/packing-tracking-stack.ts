@@ -9,41 +9,53 @@ import { Secret } from '@aws-cdk/aws-secretsmanager'
 
 require('dotenv').config()
 
-export class PackingTrackingStack extends Stack {
-  constructor(scope: Construct, id: string, props?: StackProps) {
+type CoreStackProps = {
+  stage: string
+  multiAz: boolean
+} & StackProps
+
+export class PackingTrackingCoreStack extends Stack {
+  public vpc: Vpc
+  public credentials: Credentials
+  public databaseInstance: DatabaseInstance
+  public certificate: DnsValidatedCertificate
+  public subdomain: string
+  public rootDomain: string
+  public hasuraGraphqlAdminSecret: Secret
+  constructor(scope: Construct, id: string, props?: CoreStackProps) {
     super(scope, id, props)
 
     const appName = 'PackingTracking'
-    const multiAz = false
+    const multiAz = props !== undefined ? props.multiAz : false
 
-    const vpc = new Vpc(this, `${appName}VPC`, {
+    this.vpc = new Vpc(this, `${appName}VPC`, {
       cidr: '10.0.0.0/16',
     })
 
     const dbUser = 'packageAdmin'
-    const configVals = Credentials.fromGeneratedSecret(dbUser)
+    this.credentials = Credentials.fromGeneratedSecret(dbUser)
 
-    const rootDomainName = process.env.URL ? process.env.URL : ''
-    const zone = HostedZone.fromLookup(this, 'IV-Zone', { domainName: rootDomainName })
+    this.rootDomain = process.env.URL ? process.env.URL : ''
+    const zone = HostedZone.fromLookup(this, `${appName}-Zone`, { domainName: this.rootDomain })
 
-    const graphqlSubDomainName = `graphql.${rootDomainName}`
-    const graphqlCert = new DnsValidatedCertificate(this, `${graphqlSubDomainName}-cert`, {
-      domainName: graphqlSubDomainName,
+    this.subdomain = `graphql.${this.rootDomain}`
+    this.certificate = new DnsValidatedCertificate(this, `${this.subdomain}-cert`, {
+      domainName: this.subdomain,
       hostedZone: zone,
     })
 
-    const hasuraDatabase = new DatabaseInstance(this, `${appName}HasuraDatabase`, {
+    this.databaseInstance = new DatabaseInstance(this, `${appName}HasuraDatabase`, {
       instanceIdentifier: `${appName}`,
       databaseName: `${appName}HasuraDatabase`,
       engine: DatabaseInstanceEngine.POSTGRES,
       instanceType: InstanceType.of(InstanceClass.BURSTABLE3, InstanceSize.MICRO),
-      credentials: configVals,
+      credentials: this.credentials,
       storageEncrypted: true,
       allocatedStorage: 20,
       maxAllocatedStorage: 100,
-      vpc: vpc,
+      vpc: this.vpc,
       vpcSubnets: {
-        subnetType: SubnetType.PUBLIC,
+        subnetType: SubnetType.PRIVATE,
       },
       deletionProtection: false,
       multiAz: multiAz,
@@ -67,16 +79,16 @@ export class PackingTrackingStack extends Stack {
 
     const hasuraUsername = 'hasura'
 
-    const hasuraDatabaseSecret = hasuraDatabase.secret
+    const hasuraDatabaseSecret = this.databaseInstance.secret
     const hasuraUserSecret = new DatabaseSecret(this, `${appName}HasuraDatabaseUser`, {
       username: hasuraUsername,
       masterSecret: hasuraDatabaseSecret,
     })
-    hasuraUserSecret.attach(hasuraDatabase)
+    hasuraUserSecret.attach(this.databaseInstance)
 
     new CfnOutput(this, `${appName}HasuraDatabaseMasterSecretArn`, {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      value: hasuraDatabase.secret!.secretArn,
+      value: this.databaseInstance.secret!.secretArn,
     })
 
     new CfnOutput(this, `${appName}HasuraJwtSecretArn`, {
@@ -93,55 +105,55 @@ export class PackingTrackingStack extends Stack {
     const dbUsername = hasuraDatabaseSecret?.secretValueFromJson('username')
     const dbUrl = `postgres://${dbUsername}:${dbPassword}@${dbHost}:5432/${dbName}`
 
-    const fargate = new ApplicationLoadBalancedFargateService(this, `${appName}HasuraFargateService`, {
-      serviceName: `${appName}`,
-      cpu: 256,
-      desiredCount: multiAz ? 2 : 1,
-      vpc: vpc,
-      certificate: graphqlCert,
-      domainZone: zone,
-      domainName: graphqlSubDomainName,
-      taskImageOptions: {
-        image: ContainerImage.fromRegistry('hasura/graphql-engine:v1.2.1'),
-        containerPort: 8080,
-        enableLogging: true,
-        environment: {
-          HASURA_GRAPHQL_ENABLE_CONSOLE: 'true',
-          HASURA_GRAPHQL_PG_CONNECTIONS: '100',
-          HASURA_GRAPHQL_LOG_LEVEL: 'debug',
-          HASURA_GRAPHQL_DATABASE_URL: dbUrl,
-          HASURA_GRAPHQL_ADMIN_SECRET: hasuraGraphqlAdminSecret.secretValue.toString(),
-          HASURA_GRAPHQL_JWT_SECRET:
-              '{"type":"RS512", "jwk_url": "https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com"}',
-        },
-        secrets: {
-          // HASURA_GRAPHQL_DATABASE_URL: ECSSecret.fromSecretsManager(hasuraDatabaseUrlSecret),
-          // HASURA_GRAPHQL_ADMIN_SECRET: ECSSecret.fromSecretsManager(hasuraAdminSecret),
-          // HASURA_GRAPHQL_JWT_SECRET: ECSSecret.fromSecretsManager(hasuraJwtSecret),
-        },
-      },
-      memoryLimitMiB: 512,
-      publicLoadBalancer: true, // Default is false
-      // certificate: props.certificates.hasura,
-      // domainName: props.hasuraHostname,
-      // domainZone: hostedZone,
-      assignPublicIp: false,
-    })
+    // const fargate = new ApplicationLoadBalancedFargateService(this, `${appName}HasuraFargateService`, {
+    //   serviceName: `${appName}`,
+    //   cpu: 256,
+    //   desiredCount: multiAz ? 2 : 1,
+    //   vpc: this.vpc,
+    //   certificate: this.certificate,
+    //   domainZone: zone,
+    //   domainName: this.subdomain,
+    //   taskImageOptions: {
+    //     image: ContainerImage.fromRegistry('hasura/graphql-engine:v1.2.1'),
+    //     containerPort: 8080,
+    //     enableLogging: true,
+    //     environment: {
+    //       HASURA_GRAPHQL_ENABLE_CONSOLE: 'true',
+    //       HASURA_GRAPHQL_PG_CONNECTIONS: '100',
+    //       HASURA_GRAPHQL_LOG_LEVEL: 'debug',
+    //       HASURA_GRAPHQL_DATABASE_URL: dbUrl,
+    //       HASURA_GRAPHQL_ADMIN_SECRET: hasuraGraphqlAdminSecret.secretValue.toString(),
+    //       HASURA_GRAPHQL_JWT_SECRET:
+    //         '{"type":"RS512", "jwk_url": "https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com"}',
+    //     },
+    //     secrets: {
+    //       // HASURA_GRAPHQL_DATABASE_URL: ECSSecret.fromSecretsManager(hasuraDatabaseUrlSecret),
+    //       // HASURA_GRAPHQL_ADMIN_SECRET: ECSSecret.fromSecretsManager(hasuraAdminSecret),
+    //       // HASURA_GRAPHQL_JWT_SECRET: ECSSecret.fromSecretsManager(hasuraJwtSecret),
+    //     },
+    //   },
+    //   memoryLimitMiB: 512,
+    //   publicLoadBalancer: true, // Default is false
+    //   // certificate: props.certificates.hasura,
+    //   // domainName: props.hasuraHostname,
+    //   // domainZone: hostedZone,
+    //   assignPublicIp: false,
+    // })
 
-    fargate.targetGroup.configureHealthCheck({
-      enabled: true,
-      path: '/healthz',
-      healthyHttpCodes: '200',
-    })
+    // fargate.targetGroup.configureHealthCheck({
+    //   enabled: true,
+    //   path: '/healthz',
+    //   healthyHttpCodes: '200',
+    // })
 
-    hasuraDatabase.connections.allowFrom(
-      fargate.service,
-      new Port({
-        protocol: Protocol.TCP,
-        stringRepresentation: 'Hasura Postgres Port Access',
-        fromPort: 5432,
-        toPort: 5432,
-      })
-    )
+    // this.databaseInstance.connections.allowFrom(
+    //   fargate.service,
+    //   new Port({
+    //     protocol: Protocol.TCP,
+    //     stringRepresentation: 'Hasura Postgres Port Access',
+    //     fromPort: 5432,
+    //     toPort: 5432,
+    //   })
+    // )
   }
 }
