@@ -20,7 +20,7 @@
     "test": "jest",
     "cdk": "cdk",
     "get-hasura-admin-secret-prod": "echo \"$(aws secretsmanager get-secret-value --secret-id PackingTracking-HasuraGraphqlAdminSecret | jq -r '.SecretString')\"",
-    "rebuild": "npm run destroy && npm run deploy",
+    "rebuild": "cdk destroy --all && cdk deploy --all",
     "destroy": "cdk destroy",
     "deploy": "cdk deploy"
   },
