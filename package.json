@@ -22,6 +22,7 @@
     "get-hasura-admin-secret-prod": "echo \"$(aws secretsmanager get-secret-value --secret-id PackingTracking-HasuraGraphqlAdminSecret | jq -r '.SecretString')\"",
     "rebuild": "cdk destroy --all && cdk deploy --all",
     "destroy": "cdk destroy",
+    "destroyAll": "cdk destroy --all",
     "deploy": "cdk deploy"
   },
   "repository": {
