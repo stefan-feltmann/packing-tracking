@@ -21,7 +21,7 @@ export class PackingTrackingCoreStack extends Stack {
   public certificate: DnsValidatedCertificate
   public subdomain: string
   public rootDomain: string
-  public hasuraGraphqlAdminSecret: Secret
+  // public hasuraGraphqlAdminSecret: Secret
   constructor(scope: Construct, id: string, props?: CoreStackProps) {
     super(scope, id, props)
 
@@ -69,9 +69,9 @@ export class PackingTrackingCoreStack extends Stack {
       secretName: `${appName}-HasuraDatabaseUrl`,
     })
 
-    const hasuraGraphqlAdminSecret = new Secret(this, `${appName}HasuraGraphqlAdminSecret`, {
-      secretName: `${appName}-HasuraGraphqlAdminSecret`,
-    })
+    // const hasuraGraphqlAdminSecret = new Secret(this, `${appName}HasuraGraphqlAdminSecret`, {
+    //   secretName: `${appName}-HasuraGraphqlAdminSecret`,
+    // })
 
     const hasuraJwtSecret = new Secret(this, `${appName}HasuraJwtSecret`, {
       secretName: `${appName}-HasuraJWTSecret`,
@@ -104,6 +104,21 @@ export class PackingTrackingCoreStack extends Stack {
     const dbName = hasuraDatabaseSecret?.secretValueFromJson('dbname')
     const dbUsername = hasuraDatabaseSecret?.secretValueFromJson('username')
     const dbUrl = `postgres://${dbUsername}:${dbPassword}@${dbHost}:5432/${dbName}`
+
+    this.databaseInstance.connections.allowFromAnyIpv4(new Port({
+      protocol: Protocol.TCP,
+      stringRepresentation: 'Hasura Postgres Port Access',
+      fromPort: 5432,
+      toPort: 5432,
+    }))
+
+    // this.databaseInstance.connections.allowFrom(this.vpc,
+      // new Port({
+      //   protocol: Protocol.TCP,
+      //   stringRepresentation: 'Hasura Postgres Port Access',
+      //   fromPort: 5432,
+      //   toPort: 5432,
+      // }))
 
     // const fargate = new ApplicationLoadBalancedFargateService(this, `${appName}HasuraFargateService`, {
     //   serviceName: `${appName}`,

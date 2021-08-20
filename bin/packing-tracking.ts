@@ -46,7 +46,7 @@ class PackingTrackingService extends cdk.Construct {
       certificate: coreStack.certificate,
       subdomain: coreStack.subdomain,
       rootDomain: coreStack.rootDomain,
-      hasuraGraphqlAdminSecret: coreStack.hasuraGraphqlAdminSecret,
+      // hasuraGraphqlAdminSecret: coreStack.hasuraGraphqlAdminSecret,
     })
   }
 }
