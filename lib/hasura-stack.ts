@@ -1,10 +1,10 @@
 import { DnsValidatedCertificate } from '@aws-cdk/aws-certificatemanager'
 import { ContainerImage } from '@aws-cdk/aws-ecs'
 import { ApplicationLoadBalancedFargateService } from '@aws-cdk/aws-ecs-patterns'
-import { Vpc, Port, Protocol } from '@aws-cdk/aws-ec2'
+import { Vpc } from '@aws-cdk/aws-ec2'
 import { Credentials, DatabaseInstance } from '@aws-cdk/aws-rds'
 import { HostedZone } from '@aws-cdk/aws-route53'
-import { StackProps, Stack, Construct, CfnOutput, RemovalPolicy } from '@aws-cdk/core'
+import { StackProps, Stack, Construct } from '@aws-cdk/core'
 import { Secret } from '@aws-cdk/aws-secretsmanager'
 
 type HasuraStackProps = {
@@ -17,7 +17,6 @@ type HasuraStackProps = {
   certificate: DnsValidatedCertificate
   subdomain: string
   rootDomain: string
-  // hasuraGraphqlAdminSecret: Secret
 } & StackProps
 
 export class PackingTrackingHasuraStack extends Stack {
@@ -31,14 +30,11 @@ export class PackingTrackingHasuraStack extends Stack {
     const graphqlSubDomainName = props?.subdomain
     const rootDomain = props && props.rootDomain ? props?.rootDomain : null
     const databaseInstance = props?.databaseInstance
-    // const hasuraGraphqlAdminSecret = props?.hasuraGraphqlAdminSecret
 
     const hasuraGraphqlAdminSecret = new Secret(this, `${appName}HasuraGraphqlAdminSecret`, {
       secretName: `${appName}-HasuraGraphqlAdminSecret`,
     })
 
-
-    
     if (databaseInstance && hasuraGraphqlAdminSecret && rootDomain) {
       const zone = HostedZone.fromLookup(this, `${appName}-Zone`, { domainName: rootDomain })
       const hasuraDatabaseSecret = databaseInstance.secret
@@ -51,7 +47,6 @@ export class PackingTrackingHasuraStack extends Stack {
 
       const fargate = new ApplicationLoadBalancedFargateService(this, `${appName}HasuraFargateService`, {
         serviceName: `${appName}`,
-        // securityGroups: databaseInstance.connections.securityGroups,
         cpu: 256,
         desiredCount: multiAz ? 2 : 1,
         vpc: dbVpc,
@@ -71,17 +66,9 @@ export class PackingTrackingHasuraStack extends Stack {
             HASURA_GRAPHQL_JWT_SECRET:
               '{"type":"RS512", "jwk_url": "https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com"}',
           },
-          secrets: {
-            // HASURA_GRAPHQL_DATABASE_URL: ECSSecret.fromSecretsManager(hasuraDatabaseUrlSecret),
-            // HASURA_GRAPHQL_ADMIN_SECRET: ECSSecret.fromSecretsManager(hasuraAdminSecret),
-            // HASURA_GRAPHQL_JWT_SECRET: ECSSecret.fromSecretsManager(hasuraJwtSecret),
-          },
         },
         memoryLimitMiB: 512,
-        publicLoadBalancer: true, // Default is false
-        // certificate: props.certificates.hasura,
-        // domainName: props.hasuraHostname,
-        // domainZone: hostedZone,
+        publicLoadBalancer: true,
         assignPublicIp: true,
       })
 
@@ -90,28 +77,8 @@ export class PackingTrackingHasuraStack extends Stack {
         path: '/healthz',
         healthyHttpCodes: '200',
       })
-
-      // databaseInstance.connections.allowFrom(dbVpc,
-      //   new Port({
-      //     protocol: Protocol.TCP,
-      //     stringRepresentation: 'Hasura Postgres Port Access',
-      //     fromPort: 5432,
-      //     toPort: 5432,
-      //   }))
-
-      // databaseInstance.connections.allowFrom(
-      //   fargate.service,
-      //   new Port({
-      //     protocol: Protocol.TCP,
-      //     stringRepresentation: 'Hasura Postgres Port Access',
-      //     fromPort: 5432,
-      //     toPort: 5432,
-      //   })
-      // )
     } else {
-      console.log(hasuraGraphqlAdminSecret)
-      throw new Error("else");
-      
+      throw new Error('PackingTrackingHasuraStack props error')
     }
   }
 }
