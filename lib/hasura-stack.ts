@@ -11,7 +11,7 @@ type HasuraStackProps = {
   stage: string
   multiAz: boolean
   vpc: Vpc
-  appName: string
+  projectName: string
   credentials: Credentials
   databaseInstance: DatabaseInstance
   certificate: DnsValidatedCertificate
@@ -23,7 +23,9 @@ export class PackingTrackingHasuraStack extends Stack {
   constructor(scope: Construct, id: string, props?: HasuraStackProps) {
     super(scope, id, props)
 
-    const appName = props?.appName
+    const stage = props?.stage
+    const projectName = props?.projectName
+    const appName = `${stage}-${projectName}`
     const multiAz = props?.multiAz
     const dbVpc = props?.vpc
     const graphqlCert = props?.certificate
@@ -69,7 +71,7 @@ export class PackingTrackingHasuraStack extends Stack {
         },
         memoryLimitMiB: 512,
         publicLoadBalancer: true,
-        assignPublicIp: true,
+        assignPublicIp: false,
       })
 
       fargate.targetGroup.configureHealthCheck({

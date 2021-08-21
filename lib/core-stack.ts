@@ -8,6 +8,7 @@ import { Secret } from '@aws-cdk/aws-secretsmanager'
 require('dotenv').config()
 
 type CoreStackProps = {
+  projectName: string
   stage: string
   multiAz: boolean
 } & StackProps
@@ -22,7 +23,9 @@ export class PackingTrackingCoreStack extends Stack {
   constructor(scope: Construct, id: string, props?: CoreStackProps) {
     super(scope, id, props)
 
-    const appName = 'PackingTracking'
+    const stage = props?.stage
+    const projectName = props?.projectName
+    const appName = `${stage}-${projectName}`
     const multiAz = props !== undefined ? props.multiAz : false
 
     this.vpc = new Vpc(this, `${appName}VPC`, {
@@ -35,15 +38,17 @@ export class PackingTrackingCoreStack extends Stack {
     this.rootDomain = process.env.URL ? process.env.URL : ''
     const zone = HostedZone.fromLookup(this, `${appName}-Zone`, { domainName: this.rootDomain })
 
-    this.subdomain = `graphql.${this.rootDomain}`
+    const createdSubdomain = this.createSubdomain(stage)
+    this.subdomain = createdSubdomain
     this.certificate = new DnsValidatedCertificate(this, `${this.subdomain}-cert`, {
       domainName: this.subdomain,
       hostedZone: zone,
     })
 
+    const dbProjectName = `${stage}${projectName}`
     this.databaseInstance = new DatabaseInstance(this, `${appName}HasuraDatabase`, {
-      instanceIdentifier: `${appName}`,
-      databaseName: `${appName}HasuraDatabase`,
+      instanceIdentifier: dbProjectName,
+      databaseName: `${dbProjectName}HasuraDatabase`,
       engine: DatabaseInstanceEngine.POSTGRES,
       instanceType: InstanceType.of(InstanceClass.BURSTABLE3, InstanceSize.MICRO),
       credentials: this.credentials,
@@ -106,5 +111,12 @@ export class PackingTrackingCoreStack extends Stack {
         toPort: 5432,
       })
     )
+  }
+
+  private createSubdomain(stage: string | undefined) {
+    if(stage === undefined || new String(stage).toLocaleLowerCase() === 'prod'){
+      return `graphql.${this.rootDomain}`
+    }
+    return `graphql-${stage}.${this.rootDomain}`
   }
 }

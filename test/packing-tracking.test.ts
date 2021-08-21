@@ -1,6 +1,6 @@
 import { expect as expectCDK, matchTemplate, MatchStyle } from '@aws-cdk/assert'
 import * as cdk from '@aws-cdk/core'
-import * as PackingTracking from '../lib/packing-tracking-stack'
+import * as PackingTracking from '../lib/core-stack'
 
 test('Empty Stack', () => {
   const app = new cdk.App()
