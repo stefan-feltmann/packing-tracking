@@ -23,7 +23,8 @@
     "rebuild": "cdk destroy --all && cdk deploy --all",
     "destroy": "cdk destroy",
     "destroyAll": "cdk destroy --all",
-    "deploy": "cdk deploy"
+    "deploy": "cdk deploy",
+    "deployAll": "cdk deploy --all"
   },
   "repository": {
     "type": "git",
