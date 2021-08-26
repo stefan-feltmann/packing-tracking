@@ -30,16 +30,7 @@ export class PackingTrackingCoreStack extends Stack {
 
     this.vpc = new Vpc(this, `${appName}VPC`, {
       cidr: '10.0.0.0/16',
-      subnetConfiguration:[
-        {
-          name: `${appName}VPCSubnetISOLATED`,
-          subnetType: SubnetType.ISOLATED
-        },
-        {
-          name: `${appName}VPCSubnetPUBLIC`,
-          subnetType: SubnetType.PUBLIC
-        }
-      ]
+      maxAzs: 2
     })
 
     const dbUser = 'packageAdmin'
@@ -67,7 +58,7 @@ export class PackingTrackingCoreStack extends Stack {
       maxAllocatedStorage: 100,
       vpc: this.vpc,
       vpcSubnets: {
-        subnetType: SubnetType.ISOLATED,
+        subnetType: SubnetType.PUBLIC,
       },
       deletionProtection: false,
       multiAz: multiAz,
