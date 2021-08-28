@@ -23,8 +23,10 @@
     "rebuild": "cdk destroy --all && cdk deploy --all",
     "destroy": "cdk destroy",
     "destroyAll": "cdk destroy --all",
+    "destroyAllJenkins": "cdk destroy --force --require-approval never --all",
     "deploy": "cdk deploy",
-    "deployAll": "cdk deploy --all"
+    "deployAll": "cdk deploy --all",
+    "deployAllJenkins": "cdk deploy --require-approval never --all"
   },
   "repository": {
     "type": "git",
