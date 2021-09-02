@@ -112,3 +112,8 @@ dist
 cdk.out
 packing-tracking.code-workspace
 cdk.context.json
+.gitsecret/keys/random_seed
+!*.secret
+jenkins/dockerfile
+jenkins/jenkins-docker.sh
+jenkins/Jenkinsfile
