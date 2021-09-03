@@ -1,12 +1,7 @@
-import { DnsValidatedCertificate } from '@aws-cdk/aws-certificatemanager'
-import { ContainerImage } from '@aws-cdk/aws-ecs'
-import { ApplicationLoadBalancedFargateService } from '@aws-cdk/aws-ecs-patterns'
-import { Vpc } from '@aws-cdk/aws-ec2'
-import { Credentials, DatabaseInstance } from '@aws-cdk/aws-rds'
-import { HostedZone } from '@aws-cdk/aws-route53'
 import { StackProps, Stack, Construct } from '@aws-cdk/core'
-import { RestApi } from '@aws-cdk/aws-apigateway'
-import { Secret } from '@aws-cdk/aws-secretsmanager'
+import { LambdaRestApi, CognitoUserPoolsAuthorizer, AuthorizationType } from '@aws-cdk/aws-apigateway'
+import { NodejsFunction } from '@aws-cdk/aws-lambda-nodejs'
+import { UserPool } from '@aws-cdk/aws-cognito'
 
 type ApiStackProps = {
   stage: string
@@ -22,10 +17,31 @@ export class PackingTrackingApiStack extends Stack {
     const projectName = props?.projectName
     const appName = `${stage}-${projectName}`
 
-    const api = new RestApi(this, `${appName}-api`)
+    const userPool = new UserPool(this, `${appName}UserPool`);
+
+    const auth = new CognitoUserPoolsAuthorizer(this, `${appName}Authorizer`, {
+      cognitoUserPools: [userPool]
+    })
+
+    let backend = new NodejsFunction(this, `${appName}TestFunction`, {
+      entry: 'handlers/api/handlers.ts', // accepts .js, .jsx, .ts and .tsx files
+      handler: 'handlerTest', // defaults to 'handler'
+    })
+
+    const api = new LambdaRestApi(this, `${appName}-api`,{
+      handler: backend,
+      proxy: false
+    })
 
     const v1 = api.root.addResource('v1')
-    const echo = v1.addResource('echo')
-    const echoMethod = echo.addMethod('GET')
+    const test = v1.addResource('test')
+    const test2 = v1.addResource('test2')
+    const echoMethod = test.addMethod('GET')
+    const echoMethod2 = test2.addMethod('GET', undefined, {
+      authorizer: auth,
+      authorizationType: AuthorizationType.COGNITO
+    })
+    const authRest = v1.addResource('auth')
+    const getAuthRest = authRest.addMethod('GET')
   }
 }
