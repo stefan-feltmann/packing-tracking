@@ -3,6 +3,7 @@ import 'source-map-support/register'
 import * as cdk from '@aws-cdk/core'
 import { PackingTrackingCoreStack } from '../lib/core-stack'
 import { PackingTrackingHasuraStack } from '../lib/hasura-stack'
+import { PackingTrackingApiStack } from '../lib/api-stack'
 require('dotenv').config()
 
 interface EnvProps {
@@ -20,10 +21,9 @@ class PackingTrackingService extends cdk.Construct {
       env: props.env,
       stage: props.stage,
       multiAz: props.multiAz,
-      projectName: props.projectName
+      projectName: props.projectName,
     })
 
-    
     const hasuraStack = new PackingTrackingHasuraStack(scope, `${props.stage}${props.projectName}HasuraStack`, {
       env: props.env,
       stage: props.stage,
@@ -36,11 +36,18 @@ class PackingTrackingService extends cdk.Construct {
       subdomain: coreStack.subdomain,
       rootDomain: coreStack.rootDomain,
     })
+
+    const apiStack = new PackingTrackingApiStack(scope, `${props.stage}${props.projectName}ApiStack`, {
+      env: props.env,
+      stage: props.stage,
+      multiAz: props.multiAz,
+      projectName: props.projectName,
+    })
   }
 }
 
 const app = new cdk.App()
-const multiAz = (process.env.MULTI_AZ !== undefined) ? (process.env.MULTI_AZ === 'true') : false
+const multiAz = process.env.MULTI_AZ !== undefined ? process.env.MULTI_AZ === 'true' : false
 const projectName = 'PackingTracking'
 new PackingTrackingService(app, 'prod', {
   env: {
@@ -49,5 +56,5 @@ new PackingTrackingService(app, 'prod', {
   },
   stage: process.env.STAGE ? process.env.STAGE : 'Dev',
   multiAz: multiAz,
-  projectName: projectName
+  projectName: projectName,
 })

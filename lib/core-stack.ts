@@ -4,6 +4,7 @@ import { HostedZone } from '@aws-cdk/aws-route53'
 import { DnsValidatedCertificate } from '@aws-cdk/aws-certificatemanager'
 import { DatabaseInstance, DatabaseInstanceEngine, DatabaseSecret, Credentials } from '@aws-cdk/aws-rds'
 import { Secret } from '@aws-cdk/aws-secretsmanager'
+import { ParameterTier, StringParameter } from '@aws-cdk/aws-ssm'
 
 require('dotenv').config()
 
@@ -41,6 +42,15 @@ export class PackingTrackingCoreStack extends Stack {
 
     const createdSubdomain = this.createSubdomain(stage)
     this.subdomain = createdSubdomain
+
+    new StringParameter(this, `${appName}Parameter`, {
+      allowedPattern: '.*',
+      description: `${appName} subdomain name`,
+      parameterName: `${appName}SubdomainParameter`,
+      stringValue: this.subdomain,
+      tier: ParameterTier.ADVANCED,
+    })
+
     this.certificate = new DnsValidatedCertificate(this, `${this.subdomain}-cert`, {
       domainName: this.subdomain,
       hostedZone: zone,
@@ -118,6 +128,7 @@ export class PackingTrackingCoreStack extends Stack {
     if(stage === undefined || new String(stage).toLocaleLowerCase() === 'prod'){
       return `graphql.${this.rootDomain}`
     }
-    return `graphql-${stage}.${this.rootDomain}`
+    let formattedStage = new String(stage).toLocaleLowerCase()
+    return `graphql-${formattedStage}.${this.rootDomain}`
   }
 }
