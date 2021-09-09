@@ -30,5 +30,6 @@
     "statusBar.foreground": "#e7e7e7",
     "activityBar.activeBackground": "#ff7847"
   },
-  "peacock.color": "#FF5314"
+  "peacock.color": "#FF5314",
+  "git.enableCommitSigning": true
 }
