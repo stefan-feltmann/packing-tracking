@@ -22,6 +22,7 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
+    "git-secret": "git secret hide",
     "get-hasura-admin-secret-prod": "STAGE=$(grep STAGE .env | cut -d '=' -f2) && echo \"$(aws secretsmanager get-secret-value --secret-id $STAGE-PackingTracking-HasuraGraphqlAdminSecret | jq -r '.SecretString')\"",
     "rebuild": "cdk destroy --all && cdk deploy --all",
     "destroy": "cdk destroy",
