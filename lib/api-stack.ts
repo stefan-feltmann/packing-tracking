@@ -16,15 +16,14 @@ export class PackingTrackingApiStack extends Stack {
     const projectName = props?.projectName
     const appName = `${stage}-${projectName}`
 
-
-    let backend = new NodejsFunction(this, `${appName}TestFunction`, {
+    let backend = new NodejsFunction(this, `${appName}LambdaFunction`, {
       entry: 'handlers/api/handlers.ts', // accepts .js, .jsx, .ts and .tsx files
-      handler: 'handlerTest', // defaults to 'handler'
+      handler: 'handlers', // defaults to 'handler'
     })
 
-    const api = new LambdaRestApi(this, `${appName}-api`,{
+    const api = new LambdaRestApi(this, `${appName}-api`, {
       handler: backend,
-      proxy: false
+      proxy: false,
     })
 
     const v1 = api.root.addResource('v1')

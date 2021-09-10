@@ -1,0 +1,51 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`API lambda Handlers getAuthToken 1`] = `
+Object {
+  "data": Object {
+    "User": "unit test",
+  },
+  "expiresIn": "10m",
+  "iat": Any<Number>,
+}
+`;
+
+exports[`API lambda Handlers handlers 1`] = `
+Object {
+  "body": "Hello, CDK!",
+  "headers": Object {
+    "Content-Type": "text/plain",
+  },
+  "statusCode": 200,
+}
+`;
+
+exports[`API lambda Handlers handlers 2`] = `
+Object {
+  "body": Any<String>,
+  "headers": Object {
+    "Content-Type": "text/plain",
+  },
+  "statusCode": 200,
+}
+`;
+
+exports[`API lambda Handlers handlers 3`] = `
+Object {
+  "data": Object {
+    "User": "test",
+  },
+  "expiresIn": "10m",
+  "iat": Any<Number>,
+}
+`;
+
+exports[`API lambda Handlers outputStandard 1`] = `
+Object {
+  "body": "unit test",
+  "headers": Object {
+    "Content-Type": "text/plain",
+  },
+  "statusCode": 200,
+}
+`;
