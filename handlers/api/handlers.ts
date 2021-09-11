@@ -1,20 +1,26 @@
 import { Context, APIGatewayProxyEvent } from 'aws-lambda'
-import { sign } from 'jsonwebtoken'
+import { createHash } from 'crypto'
+import { sign, verify } from 'jsonwebtoken'
 
 export const handlers = async (event: APIGatewayProxyEvent, _context: Context): Promise<any> => {
-  console.log(event)
-  console.log(_context)
+  //   console.log(event)
+  //   console.log(_context)
+  if (event && event.path && event.path !== '/v1/auth') {
+    let tokenInfo = validateAuthToken(event)
+    // console.log(tokenInfo)
+  }
   switch (event.path) {
     case '/v1/auth':
-      const token = getAuthToken(event)
-      const outputAuth = outputStandard(token)
+      const authToken = getAuthToken(event)
+      const outputAuth = outputStandard(authToken)
       return outputAuth
-      break
+    case '/v1/addMove':
+      const outputAddMove = outputDefault()
+      return outputAddMove
 
     default:
       const output = outputDefault()
       return output
-      break
   }
 }
 
@@ -22,7 +28,15 @@ export function getAuthToken(event: any) {
   const jwtSecret = getJwtSecret()
   const headers = event.headers
   const returnData = { User: headers.User }
-  const token = sign({ data: returnData, expiresIn: '10m' }, jwtSecret)
+  const token = sign({ data: returnData }, jwtSecret, { expiresIn: '10m' })
+  return token
+}
+
+export function validateAuthToken(event: any) {
+  const jwtSecret = getJwtSecret()
+  const headers = event.headers
+  const tokenString = headers.token
+  const token = verify(tokenString, jwtSecret)
   return token
 }
 
@@ -38,7 +52,11 @@ export function outputStandard(msgBody: string) {
 
 export function getJwtSecret() {
   // TODO: Setup a better secret
-  return 'shhhhh'
+  const hash = createHash('sha512')
+
+  hash.update('TODO: Setup a better secret')
+  const hashDigest = hash.digest('hex')
+  return hashDigest
 }
 
 function outputDefault() {

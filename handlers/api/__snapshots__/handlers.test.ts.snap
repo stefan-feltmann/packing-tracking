@@ -5,7 +5,7 @@ Object {
   "data": Object {
     "User": "unit test",
   },
-  "expiresIn": "10m",
+  "exp": Any<Number>,
   "iat": Any<Number>,
 }
 `;
@@ -35,8 +35,18 @@ Object {
   "data": Object {
     "User": "test",
   },
-  "expiresIn": "10m",
+  "exp": Any<Number>,
   "iat": Any<Number>,
+}
+`;
+
+exports[`API lambda Handlers handlers 4`] = `
+Object {
+  "body": Any<String>,
+  "headers": Object {
+    "Content-Type": "text/plain",
+  },
+  "statusCode": 200,
 }
 `;
 
@@ -49,3 +59,15 @@ Object {
   "statusCode": 200,
 }
 `;
+
+exports[`API lambda Handlers validateAuthToken 1`] = `
+Object {
+  "data": Object {
+    "User": "unit test",
+  },
+  "exp": Any<Number>,
+  "iat": Any<Number>,
+}
+`;
+
+exports[`API lambda Handlers validateAuthToken 2`] = `[TokenExpiredError: jwt expired]`;
