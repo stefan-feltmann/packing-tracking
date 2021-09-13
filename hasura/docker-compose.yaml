@@ -1,0 +1,31 @@
+# For composing a local dev version of the hasura and postgres containers - NOT used in prod
+version: '3.6'
+services:
+  postgres:
+    container_name: packing-postgres
+    image: mdillon/postgis:11
+    ports:
+      - '5433:5432'
+    restart: always
+    volumes:
+      - packing-db-data:/var/lib/postgresql/data
+  graphql-engine:
+    container_name: packing-hasura-graphql-engine
+    image: hasura/graphql-engine:v1.2.1
+    ports:
+      - '8080:8080'
+    depends_on:
+      - 'postgres'
+    restart: always
+    volumes:
+      - ./migrations:/hasura-migrations
+      - ./metadata:/hasura-metadata
+    environment:
+      HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:@postgres:5432/postgres
+      HASURA_GRAPHQL_ENABLE_CONSOLE: 'true'
+      HASURA_GRAPHQL_ADMIN_SECRET: 'admin'
+      HASURA_GRAPHQL_ADMIN_SECRET: 'test'
+      HASURA_GRAPHQL_JWT_SECRET: '{"type":"RS512", "jwk_url": "https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com"}'
+      WEBHOOKS_URL: 'localhost'
+volumes:
+  packing-db-data:

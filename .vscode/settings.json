@@ -2,17 +2,18 @@
   "editor.formatOnSave": true,
   "cSpell.words": [
     "BURSTABLE",
-    "Feltmann",
-    "Vals",
     "certificatemanager",
     "dbdocs",
     "dbml",
     "dbname",
     "fargate",
+    "Feltmann",
     "hasura",
     "healthz",
     "postgres",
-    "postgresql"
+    "postgresql",
+    "posttest",
+    "Vals"
   ],
   "workbench.colorCustomizations": {
     "activityBar.background": "#ff7847",

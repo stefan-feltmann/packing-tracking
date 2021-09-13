@@ -2,7 +2,17 @@ import { Context, APIGatewayProxyEvent } from 'aws-lambda'
 import { createHash } from 'crypto'
 import { sign, verify } from 'jsonwebtoken'
 
+const HASURA_GRAPHQL_ADMIN_SECRET = process.env.HASURA_GRAPHQL_ADMIN_SECRET as string
+
+const URL = process.env.URL as string
+
+const password = HASURA_GRAPHQL_ADMIN_SECRET ? HASURA_GRAPHQL_ADMIN_SECRET : 'test'
+
+const graphQlUrl = URL ? `https://graphql.${URL}` : 'localhost:8080'
+
+
 export const handlers = async (event: APIGatewayProxyEvent, _context: Context): Promise<any> => {
+
   //   console.log(event)
   //   console.log(_context)
   if (event && event.path && event.path !== '/v1/auth') {
@@ -17,7 +27,6 @@ export const handlers = async (event: APIGatewayProxyEvent, _context: Context): 
     case '/v1/addMove':
       const outputAddMove = outputDefault()
       return outputAddMove
-
     default:
       const output = outputDefault()
       return output
