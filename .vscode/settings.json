@@ -29,7 +29,13 @@
     "statusBar.background": "#ff5314",
     "statusBarItem.hoverBackground": "#ff7847",
     "statusBar.foreground": "#e7e7e7",
-    "activityBar.activeBackground": "#ff7847"
+    "activityBar.activeBackground": "#ff7847",
+    "editorGroup.border": "#ff7847",
+    "panel.border": "#ff7847",
+    "sash.hoverBorder": "#ff7847",
+    "sideBar.border": "#ff7847",
+    "statusBarItem.remoteBackground": "#ff5314",
+    "statusBarItem.remoteForeground": "#e7e7e7"
   },
   "peacock.color": "#FF5314",
   "git.enableCommitSigning": true

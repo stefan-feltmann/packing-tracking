@@ -7,6 +7,8 @@ const LambdaTester = require('lambda-tester')
 
 const password = getJwtSecret()
 
+jest.setTimeout(500000)
+
 describe('API lambda Handlers', () => {
   test('getAuthToken', () => {
     let event = { headers: { User: 'unit test' } }
@@ -45,6 +47,11 @@ describe('API lambda Handlers', () => {
       .expectResult((result: any) => {
         expect(result).toMatchSnapshot({ body: expect.any(String) })
       })
+    // await LambdaTester(handlers)
+    //   .event({ path: '/v1/addUser', headers: { token } })
+    //   .expectResult((result: any) => {
+    //     expect(result).toMatchSnapshot({ body: expect.any(String) })
+    //   })
   })
   test('validateAuthToken', async () => {
     let event = { headers: { User: 'unit test' } }

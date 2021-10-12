@@ -1,6 +1,7 @@
 import { Context, APIGatewayProxyEvent } from 'aws-lambda'
 import { createHash } from 'crypto'
 import { sign, verify } from 'jsonwebtoken'
+import { InsertMoveParams, HasuraConnection } from './hasuraConnection'
 
 const HASURA_GRAPHQL_ADMIN_SECRET = process.env.HASURA_GRAPHQL_ADMIN_SECRET as string
 
@@ -10,9 +11,9 @@ const password = HASURA_GRAPHQL_ADMIN_SECRET ? HASURA_GRAPHQL_ADMIN_SECRET : 'te
 
 const graphQlUrl = URL ? `https://graphql.${URL}` : 'localhost:8080'
 
+const hasuraConnection = new HasuraConnection(graphQlUrl, password)
 
 export const handlers = async (event: APIGatewayProxyEvent, _context: Context): Promise<any> => {
-
   //   console.log(event)
   //   console.log(_context)
   if (event && event.path && event.path !== '/v1/auth') {
@@ -25,8 +26,15 @@ export const handlers = async (event: APIGatewayProxyEvent, _context: Context): 
       const outputAuth = outputStandard(authToken)
       return outputAuth
     case '/v1/addMove':
+      // let val : InsertMoveParams = {active: true, moveName: 'foo', userId: 'abc7789e-1464-11ec-82a8-0242ac130003'}
+      // await hasuraConnection.insertMove(val)
       const outputAddMove = outputDefault()
       return outputAddMove
+    case '/v1/addUser':
+      // let val : InsertMoveParams = {active: true, moveName: 'foo', userId: 'abc7789e-1464-11ec-82a8-0242ac130003'}
+      // await hasuraConnection.insertUser('tester')
+      const outputAddUser = outputDefault()
+      return outputAddUser
     default:
       const output = outputDefault()
       return output

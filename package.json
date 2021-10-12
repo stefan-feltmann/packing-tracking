@@ -8,8 +8,8 @@
   "scripts": {
     "prettier": "pretty-quick",
     "postinstall": "ts-node scripts/install-handler-deps.ts",
-    "docker-hasura-up": "cd hasura && docker-compose up -d && npm run apply-hasura-all-dev",
-    "docker-hasura-down": "cd hasura && docker-compose down",
+    "docker-hasura-up": "cd hasura && docker-compose up -d && sleep 60 && npm run apply-hasura-all-dev",
+    "docker-hasura-down": "cd hasura && docker-compose down && docker volume prune -f",
     "pretest": "npm run docker-hasura-up",
     "posttest": "npm run docker-hasura-down",
     "dbml": "cd SQL && dbdocs",
