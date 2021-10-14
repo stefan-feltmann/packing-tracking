@@ -9,7 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.23.0",
+    "graphql": "15.6.1",
+    "graphql-tag": "2.12.5",
     "jsonwebtoken": "^8.5.1",
-    "parse-bearer-token":"^1.0.1"
+    "node-fetch": "^2.6.5"
   }
 }

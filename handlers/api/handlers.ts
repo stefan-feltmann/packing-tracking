@@ -1,7 +1,6 @@
 import { Context, APIGatewayProxyEvent } from 'aws-lambda'
 import { createHash } from 'crypto'
 import { sign, TokenExpiredError, verify } from 'jsonwebtoken'
-import parseBearerToken from 'parse-bearer-token'
 
 export const handlers = async (event: APIGatewayProxyEvent, _context: Context): Promise<any> => {
   // console.log(event.httpMethod)
