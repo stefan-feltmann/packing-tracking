@@ -3,7 +3,7 @@
 exports[`API lambda Handlers getAuthToken 1`] = `
 Object {
   "data": Object {
-    "User": "unit test",
+    "Username": "unit test",
   },
   "exp": Any<Number>,
   "iat": Any<Number>,
@@ -33,7 +33,7 @@ Object {
 exports[`API lambda Handlers handlers 3`] = `
 Object {
   "data": Object {
-    "User": "test",
+    "Username": "unit test",
   },
   "exp": Any<Number>,
   "iat": Any<Number>,
@@ -42,7 +42,7 @@ Object {
 
 exports[`API lambda Handlers handlers 4`] = `
 Object {
-  "body": Any<String>,
+  "body": "Hello, CDK!",
   "headers": Object {
     "Content-Type": "text/plain",
   },
@@ -63,7 +63,7 @@ Object {
 exports[`API lambda Handlers validateAuthToken 1`] = `
 Object {
   "data": Object {
-    "User": "unit test",
+    "Username": "unit test",
   },
   "exp": Any<Number>,
   "iat": Any<Number>,

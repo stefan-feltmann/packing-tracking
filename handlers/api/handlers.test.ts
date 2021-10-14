@@ -9,7 +9,11 @@ const password = getJwtSecret()
 
 describe('API lambda Handlers', () => {
   test('getAuthToken', () => {
-    let event = { headers: { User: 'unit test' } }
+    let user = {
+      Username: 'unit test',
+      Password: 'unit password',
+    }
+    let event = { body: JSON.stringify(user) }
     let token = getAuthToken(event)
     const decodedToken = verify(token, password)
     expect(decodedToken).toMatchSnapshot({
@@ -27,8 +31,17 @@ describe('API lambda Handlers', () => {
       .expectResult((result: any) => {
         expect(result).toMatchSnapshot()
       })
+    let user = {
+      Username: 'unit test',
+      Password: 'unit password',
+    }
     await LambdaTester(handlers)
-      .event({ path: '/v1/auth', headers: { User: 'test' } })
+      .event({
+        path: '/v1/auth',
+        httpMethod: 'POST',
+        headers: { User: 'test' },
+        body: JSON.stringify(user),
+      })
       .expectResult((result: any) => {
         expect(result).toMatchSnapshot({ body: expect.any(String) })
         let body = result.body
@@ -38,19 +51,27 @@ describe('API lambda Handlers', () => {
           iat: expect.any(Number),
         })
       })
-    let event = { headers: { User: 'unit test' } }
+    let user2 = {
+      Username: 'unit test',
+      Password: 'unit password',
+    }
+    let event = { body: JSON.stringify(user2) }
     let token = getAuthToken(event)
     await LambdaTester(handlers)
-      .event({ path: '/v1/addMove', headers: { token } })
+      .event({ path: '/v1/move', headers: { Authorization: `Bearer ${token}` } })
       .expectResult((result: any) => {
-        expect(result).toMatchSnapshot({ body: expect.any(String) })
+        expect(result).toMatchSnapshot()
       })
   })
   test('validateAuthToken', async () => {
-    let event = { headers: { User: 'unit test' } }
+    // let event = { headers: { User: 'unit test' } }
+    let user2 = {
+      Username: 'unit test',
+      Password: 'unit password',
+    }
+    let event = { body: JSON.stringify(user2) }
     let token = getAuthToken(event)
-    // console.log(token)
-    let testEvent = { headers: { token } }
+    let testEvent = { headers: { Authorization: `Bearer ${token}` } }
     let result = validateAuthToken(testEvent)
     expect(result).toMatchSnapshot({
       exp: expect.any(Number),
@@ -58,9 +79,9 @@ describe('API lambda Handlers', () => {
     })
     let oldToken =
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOiJ1bml0IHRlc3QifSwiaWF0IjoxNjMxMzMzMTUwLCJleHAiOjE2MzEzMzM3NTB9.mcqi6u8jHHf4iaXSKT40Ve6tM0oiNSwFMyqEQnM-MbE'
-    testEvent = { headers: { token: oldToken } }
+    // testEvent = { headers: { Authorization: `Bearer ${oldToken}` } }
     try {
-      testEvent = { headers: { token: oldToken } }
+      testEvent = { headers: { Authorization: `Bearer ${oldToken}` } }
       let result = validateAuthToken(testEvent)
       expect(result).toBeUndefined()
     } catch (error) {

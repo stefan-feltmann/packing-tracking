@@ -27,10 +27,11 @@ export class PackingTrackingApiStack extends Stack {
     })
 
     const v1 = api.root.addResource('v1')
-    const test = v1.addResource('test')
-    const test2 = v1.addResource('test2')
-    const echoMethod = test.addMethod('GET')
     const authRest = v1.addResource('auth')
     const getAuthRest = authRest.addMethod('GET')
+    const postAuthRest = authRest.addMethod('POST')
+    const userRest = v1.addResource('user')
+    const getUserRest = userRest.addMethod('GET')
+    const postUserRest = userRest.addMethod('POST')
   }
 }
