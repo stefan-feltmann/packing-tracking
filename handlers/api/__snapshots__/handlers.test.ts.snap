@@ -12,11 +12,11 @@ Object {
 
 exports[`API lambda Handlers handlers 1`] = `
 Object {
-  "body": "Hello, CDK!",
+  "body": "Method Not Allowed",
   "headers": Object {
     "Content-Type": "text/plain",
   },
-  "statusCode": 200,
+  "statusCode": 405,
 }
 `;
 
@@ -42,11 +42,11 @@ Object {
 
 exports[`API lambda Handlers handlers 4`] = `
 Object {
-  "body": "Hello, CDK!",
+  "body": "Method Not Allowed",
   "headers": Object {
     "Content-Type": "text/plain",
   },
-  "statusCode": 200,
+  "statusCode": 405,
 }
 `;
 

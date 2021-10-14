@@ -118,10 +118,10 @@ export function getJwtSecret() {
 
 function outputDefault() {
   return {
-    statusCode: 200,
+    statusCode: 405,
     headers: {
       'Content-Type': 'text/plain',
     },
-    body: 'Hello, CDK!',
+    body: 'Method Not Allowed',
   }
 }
