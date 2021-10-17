@@ -42,6 +42,10 @@ class PackingTrackingService extends cdk.Construct {
       stage: props.stage,
       multiAz: props.multiAz,
       projectName: props.projectName,
+      hasuraSecret: hasuraStack.hasuraSecret,
+      hasuraFargate: hasuraStack.hasuraFargate,
+      databaseInstance: coreStack.databaseInstance,
+      hasuraSecurityGroup: hasuraStack.hasuraSecurityGroup,
     })
   }
 }

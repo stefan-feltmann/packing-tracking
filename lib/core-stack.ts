@@ -5,6 +5,7 @@ import { DnsValidatedCertificate } from '@aws-cdk/aws-certificatemanager'
 import { DatabaseInstance, DatabaseInstanceEngine, DatabaseSecret, Credentials } from '@aws-cdk/aws-rds'
 import { Secret } from '@aws-cdk/aws-secretsmanager'
 import { ParameterTier, StringParameter } from '@aws-cdk/aws-ssm'
+import { Role } from '@aws-cdk/aws-iam'
 
 require('dotenv').config()
 
@@ -21,6 +22,7 @@ export class PackingTrackingCoreStack extends Stack {
   public certificate: DnsValidatedCertificate
   public subdomain: string
   public rootDomain: string
+  public hasuraRole: Role
   constructor(scope: Construct, id: string, props?: CoreStackProps) {
     super(scope, id, props)
 
@@ -31,7 +33,7 @@ export class PackingTrackingCoreStack extends Stack {
 
     this.vpc = new Vpc(this, `${appName}VPC`, {
       cidr: '10.0.0.0/16',
-      maxAzs: 2
+      maxAzs: 2,
     })
 
     const dbUser = 'packageAdmin'
@@ -125,7 +127,7 @@ export class PackingTrackingCoreStack extends Stack {
   }
 
   private createSubdomain(stage: string | undefined) {
-    if(stage === undefined || new String(stage).toLocaleLowerCase() === 'prod'){
+    if (stage === undefined || new String(stage).toLocaleLowerCase() === 'prod') {
       return `graphql.${this.rootDomain}`
     }
     let formattedStage = new String(stage).toLocaleLowerCase()

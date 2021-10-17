@@ -44,6 +44,8 @@ export class HasuraConnection {
       data: data,
     }
 
+    console.log(config)
+
     return await axios(config)
       .then(function (response: { data: any }) {
         return response.data

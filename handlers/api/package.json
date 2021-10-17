@@ -9,10 +9,19 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "aws-sdk": "^2.1007.0",
     "axios": "^0.23.0",
-    "graphql": "15.6.1",
+    "graphql": "^15.6.1",
     "graphql-tag": "2.12.5",
     "jsonwebtoken": "^8.5.1",
-    "node-fetch": "^2.6.5"
+    "node-fetch": "^2.6.5",
+    "ping": "^0.4.1",
+    "pg": "^8.7.1",
+    "pg-native":"^3.0.0",
+    "node-gyp": "^8.2.0"
+  },
+  "devDependencies": {
+    "@types/ping": "^0.2.1",
+    "@types/pg":"^6.1.48"
   }
 }
