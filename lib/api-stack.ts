@@ -1,5 +1,5 @@
 import { StackProps, Stack, Construct, Duration, SecretValue } from '@aws-cdk/core'
-import { HttpIntegration, Integration, LambdaRestApi, TokenAuthorizer } from '@aws-cdk/aws-apigateway'
+import { AccessLogFormat, HttpIntegration, Integration, LambdaRestApi, LogGroupLogDestination, TokenAuthorizer } from '@aws-cdk/aws-apigateway'
 import { NodejsFunction } from '@aws-cdk/aws-lambda-nodejs'
 import { StringParameter } from '@aws-cdk/aws-ssm'
 import { Role, ServicePrincipal } from '@aws-cdk/aws-iam'
@@ -7,6 +7,7 @@ import { ISecret, Secret } from '@aws-cdk/aws-secretsmanager'
 import { ApplicationLoadBalancedFargateService } from '@aws-cdk/aws-ecs-patterns'
 import { SecurityGroup } from '@aws-cdk/aws-ec2'
 import { DatabaseInstance } from '@aws-cdk/aws-rds'
+import { LogGroup } from '@aws-cdk/aws-logs'
 
 type ApiStackProps = {
   stage: string
@@ -64,9 +65,17 @@ export class PackingTrackingApiStack extends Stack {
 
       props?.hasuraSecret.grantRead(backend)
 
-      const api = new LambdaRestApi(this, `${appName}-api`, {
+      const logGroup = new LogGroup(this, `${appName}ApiGatewayAccessLogs`)
+
+      const api = new LambdaRestApi(this, `${appName}Api`, {
         handler: backend,
         proxy: false,
+        deployOptions: {
+          accessLogDestination: new LogGroupLogDestination(logGroup),
+          accessLogFormat: AccessLogFormat.custom(
+           '{"requestTime":"$context.requestTime","requestId":"$context.requestId","httpMethod":"$context.httpMethod","path":"$context.path","resourcePath":"$context.resourcePath","status":$context.status,"responseLatency":$context.responseLatency}' 
+          )
+        }
       })
 
       // let authFunc= new NodejsFunction(this, `${appName}LambdaFunctionAuth`, {
