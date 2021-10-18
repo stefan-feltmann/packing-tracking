@@ -1,5 +1,5 @@
 import { StackProps, Stack, Construct, Duration, SecretValue } from '@aws-cdk/core'
-import { LambdaRestApi } from '@aws-cdk/aws-apigateway'
+import { HttpIntegration, Integration, LambdaRestApi, TokenAuthorizer } from '@aws-cdk/aws-apigateway'
 import { NodejsFunction } from '@aws-cdk/aws-lambda-nodejs'
 import { StringParameter } from '@aws-cdk/aws-ssm'
 import { Role, ServicePrincipal } from '@aws-cdk/aws-iam'
@@ -69,6 +69,16 @@ export class PackingTrackingApiStack extends Stack {
         proxy: false,
       })
 
+      // let authFunc= new NodejsFunction(this, `${appName}LambdaFunctionAuth`, {
+      //   entry: 'handlers/api/authorizer.ts', // accepts .js, .jsx, .ts and .tsx files
+      //   handler: 'handler', // defaults to 'handler',
+      //   timeout: Duration.seconds(60),
+      // })
+
+      // const auth = new TokenAuthorizer(this, `${appName}LambdaFunctionAuthorizer`, {
+      //   handler: authFunc
+      // })
+
       const v1 = api.root.addResource('v1')
       const authRest = v1.addResource('auth')
       const getAuthRest = authRest.addMethod('GET')
@@ -76,6 +86,13 @@ export class PackingTrackingApiStack extends Stack {
       const userRest = v1.addResource('user')
       const getUserRest = userRest.addMethod('GET')
       const postUserRest = userRest.addMethod('POST')
+      const putUserRest = userRest.addMethod('PUT')
+      const deleteUserRest = userRest.addMethod('DELETE')
+      const userRestId = userRest.addResource('{id}')
+      const getuserRestId = userRestId.addMethod('GET')
+      const postuserRestId = userRestId.addMethod('POST')
+      const putuserRestId = userRestId.addMethod('PUT')
+      const deleteuserRestId = userRestId.addMethod('DELETE')
     }
 
     function getSecretValue(hasuraDatabaseSecret: ISecret | undefined, value: string) {
