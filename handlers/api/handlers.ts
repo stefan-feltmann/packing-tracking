@@ -7,6 +7,11 @@ import { PostgresConnection } from './postgresConnection'
 import { sys } from 'ping'
 import { Client } from 'pg'
 
+console.log(process.env.DB_USERNAME)
+console.log(process.env.DB_PASSWORD)
+console.log(process.env.DB_HOST)
+console.log(process.env.DB_NAME)
+
 const dbUser = getEnvVar('DB_USERNAME')
 const dbPassword = getEnvVar('DB_PASSWORD')
 const dbHost = getEnvVar('DB_HOST')

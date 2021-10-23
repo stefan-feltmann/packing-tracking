@@ -9,6 +9,7 @@ export class PostgresConnection {
   //TODO: This might be better served as a pool.
   private client: Client
   constructor(dbUser: string, password: string, host: string, database: string, port: number = 5432) {
+    console.log(dbUser, password, host, database, port)
     this.dbUser = dbUser
     this.host = host
     this.database = database

@@ -1,3 +1,8 @@
+process.env.DB_USERNAME = 'postgres'
+process.env.DB_PASSWORD = 'secret'
+process.env.DB_HOST = 'localhost'
+process.env.DB_NAME = 'public'
+
 import { getAuthToken, outputStandard, handlers, validateAuthToken, getJwtSecret } from './handlers'
 import { Context, APIGatewayProxyEvent } from 'aws-lambda'
 import { verify, TokenExpiredError } from 'jsonwebtoken'
@@ -7,7 +12,25 @@ const LambdaTester = require('lambda-tester')
 
 const password = getJwtSecret()
 
-describe('API lambda Handlers', () => {
+jest.setTimeout(500000)
+
+/*
+const dbUser = getEnvVar('DB_USERNAME')
+const dbPassword = getEnvVar('DB_PASSWORD')
+const dbHost = getEnvVar('DB_HOST')
+const dbName = getEnvVar('DB_NAME')
+*/
+
+
+beforeEach(() => {
+  
+  console.log(process.env.DB_USERNAME)
+  console.log(process.env.DB_PASSWORD)
+  console.log(process.env.DB_HOST)
+  console.log(process.env.DB_NAME)
+})
+
+describe.skip('API lambda Handlers', () => {
   test('getAuthToken', () => {
     let user = {
       Username: 'unit test',
