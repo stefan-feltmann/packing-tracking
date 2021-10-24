@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PostgresConnection construct 1`] = `
+Array [
+  Object {
+    "now": Any<Date>,
+  },
+]
+`;
