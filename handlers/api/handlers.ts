@@ -26,7 +26,7 @@ export const handlers = async (event: APIGatewayProxyEvent, _context: Context): 
   // console.log(output)
 
   try {
-    await postgresConnection.setupDB()
+    // await postgresConnection.setupDB()
   } catch (error) {
     
   }

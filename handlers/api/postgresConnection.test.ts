@@ -8,22 +8,21 @@ const DB_NAME = 'postgres'
 const DB_PORT = 5433
 let postgresConnection: PostgresConnection
 
-beforeEach(() => {
+beforeEach(async () => {
   postgresConnection = new PostgresConnection(DB_USERNAME, DB_PASSWORD, DB_HOST, DB_NAME, DB_PORT)
+  await postgresConnection.setupDB()
 })
 
 describe('PostgresConnection', () => {
   test('construct', async () => {
     expect(postgresConnection).not.toBeUndefined()
   })
-  test('construct', async () => {
+  test('checkConnection', async () => {
     let output = await postgresConnection.checkConnection()
-    expect(output).toMatchSnapshot(
-      [
-        {
-          now: expect.any(Date),
-        },
-      ]
-    )
+    expect(output).toMatchSnapshot([
+      {
+        now: expect.any(Date),
+      },
+    ])
   })
 })

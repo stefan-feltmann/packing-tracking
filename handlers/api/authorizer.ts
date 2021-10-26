@@ -15,16 +15,14 @@ import {
   Statement,
 } from 'aws-lambda'
 
-export const handlers = async (event: APIGatewayTokenAuthorizerEvent,
-    context: Context,
-    callback: APIGatewayAuthorizerCallback): Promise<any> => {
-
-// exports.handler = function (
-//   event: APIGatewayTokenAuthorizerEvent,
-//   context: Context,
-//   callback: APIGatewayAuthorizerCallback
-// ) {
+export const handlers = async (
+  event: APIGatewayTokenAuthorizerEvent,
+  context: Context,
+  callback: APIGatewayAuthorizerCallback
+): Promise<any> => {
   let token = event.authorizationToken
+  console.log(JSON.stringify(event))
+  console.log(JSON.stringify(context))
   switch (token) {
     case 'allow':
       callback(null, generatePolicy('user', 'Allow', event.methodArn))
