@@ -6,6 +6,9 @@ import {
   LambdaRestApi,
   LogGroupLogDestination,
   TokenAuthorizer,
+  LambdaIntegration,
+  Method,
+  Resource,
 } from '@aws-cdk/aws-apigateway'
 import { NodejsFunction } from '@aws-cdk/aws-lambda-nodejs'
 import { StringParameter } from '@aws-cdk/aws-ssm'
@@ -76,8 +79,23 @@ export class PackingTrackingApiStack extends Stack {
 
       const logGroup = new LogGroup(this, `${appName}ApiGatewayAccessLogs`)
 
+      let handlerMethodNotAllowed = new NodejsFunction(this, `handlerMethodNotAllowedLambdaFunction`, {
+        entry: 'handlers/api/apiHandlers.ts', // accepts .js, .jsx, .ts and .tsx files
+        handler: 'handlerMethodNotAllowed', // defaults to 'handler'
+        environment: {
+          HASURA_LOAD_BALANCER_DNS_NAME: dnsName,
+          SECRET_NAME: secretName,
+          DB_PASSWORD: dbPassword,
+          DB_HOST: dbHost,
+          DB_NAME: dbName,
+          DB_USERNAME: dbUsername,
+        },
+        timeout: Duration.seconds(60),
+        vpc: databaseInstance.vpc,
+      })
+
       const api = new LambdaRestApi(this, `${appName}Api`, {
-        handler: backend,
+        handler: handlerMethodNotAllowed,
         proxy: false,
         deployOptions: {
           accessLogDestination: new LogGroupLogDestination(logGroup),
@@ -103,7 +121,7 @@ export class PackingTrackingApiStack extends Stack {
       })
 
       const eventRule = new Rule(this, 'scheduleRule', {
-        schedule: Schedule.rate(Duration.minutes(5)),
+        schedule: Schedule.rate(Duration.hours(5)),
       })
 
       eventRule.addTarget(new LambdaFunction(initializerFunc))
@@ -114,8 +132,18 @@ export class PackingTrackingApiStack extends Stack {
         timeout: Duration.seconds(60),
       })
 
-      const auth = new TokenAuthorizer(this, `${appName}LambdaFunctionAuthorizer`, {
+      const auth = new TokenAuthorizer(this, `LambdaFunctionAuthorizer`, {
         handler: authFunc,
+      })
+
+      let allowAllAuthFunc = new NodejsFunction(this, `LambdaAllowAllAuthFunction`, {
+        entry: 'handlers/api/authorizer.ts', // accepts .js, .jsx, .ts and .tsx files
+        handler: 'allowAllHandlers', // defaults to 'handler',
+        timeout: Duration.seconds(60),
+      })
+
+      const allowAllAuth = new TokenAuthorizer(this, `LambdaFunctionAllowAllAuthorizer`, {
+        handler: allowAllAuthFunc,
       })
 
       const v1 = api.root.addResource('v1', {
@@ -123,16 +151,42 @@ export class PackingTrackingApiStack extends Stack {
           authorizer: auth,
         },
       })
-      const authRest = v1.addResource('auth')
+      const authRest = v1.addResource('auth', {
+        defaultMethodOptions: {
+          authorizer: allowAllAuth,
+        },
+      })
       const getAuthRest = authRest.addMethod('GET')
       const postAuthRest = authRest.addMethod('POST')
       const userRest = v1.addResource('user')
-      const getUserRest = userRest.addMethod('GET')
+
+      const userGetterName = 'handlerGetUser'
+      const handlerPath = 'handlers/api/apiHandlers.ts'
+      const methodVerb = 'GET'
+      const envVars = {
+        HASURA_LOAD_BALANCER_DNS_NAME: dnsName,
+        SECRET_NAME: secretName,
+        DB_PASSWORD: dbPassword,
+        DB_HOST: dbHost,
+        DB_NAME: dbName,
+        DB_USERNAME: dbUsername,
+      }
+
+      // let getUserRest : Method
+
+      const getUserRest = this.addMethod(userGetterName, handlerPath, envVars, databaseInstance, userRest, methodVerb)
       const postUserRest = userRest.addMethod('POST')
       const putUserRest = userRest.addMethod('PUT')
       const deleteUserRest = userRest.addMethod('DELETE')
       const userRestId = userRest.addResource('{id}')
-      const getUserRestId = userRestId.addMethod('GET')
+      const getUserRestId = this.addMethod(
+        'handlerGetUserId',
+        handlerPath,
+        envVars,
+        databaseInstance,
+        userRestId,
+        methodVerb
+      )
       const postUserRestId = userRestId.addMethod('POST')
       const putUserRestId = userRestId.addMethod('PUT')
       const deleteUserRestId = userRestId.addMethod('DELETE')
@@ -146,5 +200,32 @@ export class PackingTrackingApiStack extends Stack {
       }
       return output
     }
+  }
+
+  private addMethod(
+    functionName: string,
+    handlerPath: string,
+    envVars: {
+      HASURA_LOAD_BALANCER_DNS_NAME: string
+      SECRET_NAME: string
+      DB_PASSWORD: string
+      DB_HOST: string
+      DB_NAME: string
+      DB_USERNAME: string
+    },
+    databaseInstance: DatabaseInstance,
+    userRest: Resource,
+    methodVerb: string
+  ) {
+    let nodeHandler = new NodejsFunction(this, `${functionName}LambdaFunction`, {
+      entry: handlerPath,
+      handler: functionName,
+      environment: envVars,
+      timeout: Duration.seconds(60),
+      vpc: databaseInstance.vpc,
+    })
+
+    let getUserRest = userRest.addMethod(methodVerb, new LambdaIntegration(nodeHandler))
+    return getUserRest
   }
 }

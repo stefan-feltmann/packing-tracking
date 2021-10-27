@@ -32,30 +32,21 @@ export class PostgresConnection {
       let exists = false
 
       try {
-        // let selectExistQuery = `SELECT EXISTS (
-        //   SELECT FROM users
-        //   );`
 
-        // let selectExistResponse = await this.runQuery(selectExistQuery, [])
-
-        let foo = `SELECT *
+        let queryTables = `SELECT *
         FROM pg_catalog.pg_tables
         WHERE schemaname != 'pg_catalog' AND 
             schemaname != 'information_schema';`
 
-        let bar = await this.runQuery(foo, [])
+        let tables = await this.runQuery(queryTables, [])
 
-        console.log('-----------------------------------')
-        // console.log(bar)
-        for (let baz of bar) {
+        for (let table of tables) {
           // console.log(baz)
-          if (baz['tablename'] === 'box') {
+          if (table['tablename'] === 'box') {
             exists = true
           }
         }
-        console.log('===================================')
 
-        // exists = selectExistResponse[0].exists
       } catch (error) {}
 
       if (!exists) {
@@ -127,7 +118,6 @@ export class PostgresConnection {
   }
 
   public async insertUser(username: string): Promise<any[]> {
-    // await this.setupDB()
     const query: string = 'INSERT INTO users(username) VALUES($1) RETURNING *'
     const values = [username]
     let dbPromise = this.runQuery(query, values)
@@ -135,15 +125,20 @@ export class PostgresConnection {
   }
 
   public async selectUsers(): Promise<any[]> {
-    // await this.setupDB()
     const query: string = 'SELECT * FROM users'
     const values: string[] = []
     let dbPromise = this.runQuery(query, values)
     return dbPromise
   }
 
+  public async selectUserById(id: string): Promise<any[]> {
+    const query: string = 'SELECT * FROM users WHERE id = $1'
+    const values: string[] = [id]
+    let dbPromise = this.runQuery(query, values)
+    return dbPromise
+  }
+
   public async checkConnection(): Promise<any[]> {
-    // await this.setupDB()
     const selectNowQuery: string = 'SELECT NOW()'
     const selectNowVariables: string[] = []
     let dbPromise = this.runQuery(selectNowQuery, selectNowVariables)

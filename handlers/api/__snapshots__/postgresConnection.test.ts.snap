@@ -7,3 +7,7 @@ Array [
   },
 ]
 `;
+
+exports[`PostgresConnection selectUserById 1`] = `Array []`;
+
+exports[`PostgresConnection selectUsers 1`] = `Array []`;

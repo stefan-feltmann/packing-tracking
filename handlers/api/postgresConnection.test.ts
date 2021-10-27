@@ -25,4 +25,12 @@ describe('PostgresConnection', () => {
       },
     ])
   })
+  test('selectUsers', async () => {
+    let output = await postgresConnection.selectUsers()
+    expect(output).toMatchSnapshot()
+  })
+  test('selectUserById', async () => {
+    let output = await postgresConnection.selectUserById('58bca8b1-51c3-4f86-a476-18b9f60dd81e')
+    expect(output).toMatchSnapshot()
+  })
 })

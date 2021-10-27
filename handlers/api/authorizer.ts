@@ -15,6 +15,16 @@ import {
   Statement,
 } from 'aws-lambda'
 
+export const allowAllHandlers = async (
+  event: APIGatewayTokenAuthorizerEvent,
+  context: Context,
+  callback: APIGatewayAuthorizerCallback
+): Promise<any> => {
+  console.log(JSON.stringify(event))
+  console.log(JSON.stringify(context))
+  callback(null, generatePolicy('user', 'Allow', event.methodArn))
+}
+
 export const handlers = async (
   event: APIGatewayTokenAuthorizerEvent,
   context: Context,

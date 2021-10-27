@@ -6,19 +6,18 @@ import { HasuraConnection } from './hasuraConnection'
 import { PostgresConnection } from './postgresConnection'
 import { sys } from 'ping'
 import { Client } from 'pg'
+import * as utils from './utils'
 
 console.log(process.env.DB_USERNAME)
 console.log(process.env.DB_PASSWORD)
 console.log(process.env.DB_HOST)
 console.log(process.env.DB_NAME)
 
-const dbUser = getEnvVar('DB_USERNAME')
-const dbPassword = getEnvVar('DB_PASSWORD')
-const dbHost = getEnvVar('DB_HOST')
-const dbName = getEnvVar('DB_NAME')
+const dbUser = utils.getEnvVar('DB_USERNAME')
+const dbPassword = utils.getEnvVar('DB_PASSWORD')
+const dbHost = utils.getEnvVar('DB_HOST')
+const dbName = utils.getEnvVar('DB_NAME')
 const postgresConnection = new PostgresConnection(dbUser, dbPassword, dbHost, dbName)
-
-
 
 export const handlers = async (event: APIGatewayProxyEvent, _context: Context): Promise<any> => {
   // let output = await postgresConnection.checkConnection()
@@ -27,9 +26,7 @@ export const handlers = async (event: APIGatewayProxyEvent, _context: Context): 
 
   try {
     // await postgresConnection.setupDB()
-  } catch (error) {
-    
-  }
+  } catch (error) {}
 
   let turnOnAuth = false
 
@@ -174,15 +171,6 @@ function handlePost(event: APIGatewayProxyEvent) {
     default:
       return returnMethodNotAllowed()
   }
-}
-
-function getEnvVar(variable: string): string {
-  let output = ''
-  let env = process.env[variable]
-  if (env && typeof env !== 'undefined') {
-    output = env
-  }
-  return output
 }
 
 function makeResponse(status: number, headers: { headers: { 'Content-Type': string } }, bodyMsg: string) {
