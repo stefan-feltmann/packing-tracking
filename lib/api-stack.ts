@@ -105,26 +105,26 @@ export class PackingTrackingApiStack extends Stack {
         },
       })
 
-      let initializerFunc = new NodejsFunction(this, `LambdaInitFunction`, {
-        entry: 'handlers/api/initializer.ts', // accepts .js, .jsx, .ts and .tsx files
-        handler: 'handlers', // defaults to 'handler',
-        environment: {
-          HASURA_LOAD_BALANCER_DNS_NAME: dnsName,
-          SECRET_NAME: secretName,
-          DB_PASSWORD: dbPassword,
-          DB_HOST: dbHost,
-          DB_NAME: dbName,
-          DB_USERNAME: dbUsername,
-        },
-        timeout: Duration.seconds(60),
-        vpc: databaseInstance.vpc,
-      })
+      // let initializerFunc = new NodejsFunction(this, `LambdaInitFunction`, {
+      //   entry: 'handlers/api/initializer.ts', // accepts .js, .jsx, .ts and .tsx files
+      //   handler: 'handlers', // defaults to 'handler',
+      //   environment: {
+      //     HASURA_LOAD_BALANCER_DNS_NAME: dnsName,
+      //     SECRET_NAME: secretName,
+      //     DB_PASSWORD: dbPassword,
+      //     DB_HOST: dbHost,
+      //     DB_NAME: dbName,
+      //     DB_USERNAME: dbUsername,
+      //   },
+      //   timeout: Duration.seconds(60),
+      //   vpc: databaseInstance.vpc,
+      // })
 
-      const eventRule = new Rule(this, 'scheduleRule', {
-        schedule: Schedule.rate(Duration.hours(5)),
-      })
+      // const eventRule = new Rule(this, 'scheduleRule', {
+      //   schedule: Schedule.rate(Duration.hours(5)),
+      // })
 
-      eventRule.addTarget(new LambdaFunction(initializerFunc))
+      // eventRule.addTarget(new LambdaFunction(initializerFunc))
 
       let authFunc = new NodejsFunction(this, `LambdaAuthFunction`, {
         entry: 'handlers/api/authorizer.ts', // accepts .js, .jsx, .ts and .tsx files

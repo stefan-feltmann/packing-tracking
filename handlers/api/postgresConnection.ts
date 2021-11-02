@@ -1,5 +1,37 @@
 import { Client } from 'pg'
 
+/*
+CREATE TABLE "users" (
+  "id" uuid UNIQUE PRIMARY KEY DEFAULT (uuid_generate_v4()),
+  "username" varchar UNIQUE NOT NULL,
+  "role" varchar,
+  "created_at" timestamp DEFAULT (now()),
+  "active" bool DEFAULT (true)
+);
+*/
+export class PackingUser {
+  private id: string
+  private userName: string
+  private role: string
+  private createdAt: Date
+  private active: boolean
+  constructor(userName: string, id?: string, role?: string, createdAt?: Date, active?: boolean){
+    this.userName = userName
+    if(id){
+      this.id = id
+    }
+    if(role){
+      this.role = role
+    }
+    if(createdAt){
+      this.createdAt = createdAt
+    }
+    if(active !== undefined){
+      this.active = active
+    }
+  }
+}
+
 export class PostgresConnection {
   private password: string
   private dbUser: string
